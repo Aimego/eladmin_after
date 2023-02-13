@@ -1,0 +1,221 @@
+{
+    "experimentalPeriod": {
+        "week": {
+            "date": [
+                "2023-05",
+                "2023-03",
+                "2022-48",
+                "2022-47",
+                "2022-46",
+                "2022-35",
+                "2022-30",
+                "2022-29",
+                "2022-28",
+                "2022-27",
+                "2022-26",
+                "2022-25"
+            ],
+            "avg": [
+                75,
+                73,
+                71,
+                72.3,
+                92,
+                81.5,
+                71.1,
+                72.1,
+                72.7,
+                70.1,
+                68.1,
+                70.3
+            ],
+            "count": [
+                1,
+                3,
+                9,
+                5,
+                1,
+                2,
+                68,
+                67,
+                68,
+                69,
+                68,
+                67
+            ]
+        },
+        "month": {
+            "date": [
+                "2023-01",
+                "2022-12",
+                "2022-11",
+                "2022-08",
+                "2022-07",
+                "2022-06",
+                "2022-05",
+                "2022-04",
+                "2022-03",
+                "2022-02",
+                "2022-01",
+                "2021-12"
+            ],
+            "avg": [
+                73.5,
+                73,
+                72.4,
+                81.5,
+                71,
+                69,
+                69,
+                69.2,
+                69.4,
+                69.4,
+                69.7,
+                69.9
+            ],
+            "count": [
+                4,
+                4,
+                12,
+                2,
+                97,
+                96,
+                96,
+                94,
+                97,
+                97,
+                95,
+                97
+            ]
+        },
+        "year": {
+            "date": [
+                "2023",
+                "2022",
+                "2021",
+                "2020",
+                "2019"
+            ],
+            "avg": [
+                73.5,
+                69.6,
+                69.8,
+                69.2,
+                69.5
+            ],
+            "count": [
+                4,
+                112,
+                189,
+                180,
+                182
+            ]
+        }
+    },
+    "Professtional": [
+        {
+            "id": 3,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "马克思主义理论类",
+            "number": 3,
+            "percent": 23.1
+        },
+        {
+            "id": 4,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "化学类",
+            "number": 2,
+            "percent": 15.4
+        },
+        {
+            "id": 5,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "化工与制药类",
+            "number": 1,
+            "percent": 7.7
+        },
+        {
+            "id": 6,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "土木类",
+            "number": 4,
+            "percent": 30.8
+        },
+        {
+            "id": 7,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "机械类",
+            "number": 3,
+            "percent": 23.1
+        },
+        {
+            "id": 8,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "材料类",
+            "number": 5,
+            "percent": 38.5
+        },
+        {
+            "id": 9,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "物理学类",
+            "number": 1,
+            "percent": 7.7
+        },
+        {
+            "id": 10,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "电子信息类",
+            "number": 2,
+            "percent": 15.4
+        },
+        {
+            "id": 11,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "电气类",
+            "number": 3,
+            "percent": 23.1
+        },
+        {
+            "id": 12,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "矿业类",
+            "number": 2,
+            "percent": 15.4
+        },
+        {
+            "id": 13,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "管理类",
+            "number": 2,
+            "percent": 15.4
+        },
+        {
+            "id": 14,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "自动化类",
+            "number": 2,
+            "percent": 15.4
+        },
+        {
+            "id": 15,
+            "createId": 3,
+            "collegeId": 1,
+            "najorname": "生物医学工程类",
+            "number": 1,
+            "percent": 7.7
+        }
+    ]
+}
