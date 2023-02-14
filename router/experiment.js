@@ -54,4 +54,19 @@ router.post('/addExperiment',(req,res) => {
     })
 })
 
+// 删除实验
+router.post('/deleteExperiment',(req,res) => {
+    let { _id } = req.body 
+    new Promise((resolve) => {
+        experiment_model.deleteOne({
+            _id
+        },(err) => {
+            if(err) { throw new Error(err) }
+            resolve()
+        })
+    }).then(() => {
+        res.send({code:200, message: '删除实验成功'})
+    })
+})
+
 module.exports = router

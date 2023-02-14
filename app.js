@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken') // jwtToken获取
 const { expressjwt } = require('express-jwt') // express针对的jwtToken验证
 const md5 = require('js-md5')
 const upload = require('./utils/upload')
+const path = require('path')
 require('./utils/getNowDate') // 添加Date内置getNowDate方法
 // 路由模块
 const dashboard_router = require('./router/dashboard.js')
@@ -25,6 +26,7 @@ const resource_model = require('./model/resource')
 server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use('/statics/', express.static('./statics/')) // 将statics图片路径替换成文件的相对路径
+server.use(express.static(path.join(__dirname, './dist')))
 
 server.use(expressjwt({
     secret: jwtSecret,
@@ -115,7 +117,6 @@ server.post('/login',(req,res,next) => {
 server.post('/upload',(req,res) => {
     let { username } = req.auth
     upload(req,res).then(({imageurl,file}) => {
-        console.log(imageurl,file)
         new resource_model({
             originalname: file.originalname,
             imageurl,

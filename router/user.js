@@ -114,13 +114,18 @@ router.get('/menu_authority',async(req,res,next) => {
 // 上传用户图片
 router.post('/uploadAvatar',(req,res) => {
     let { username } = req.auth
-    upload(req, res).then(async(imgsrc) => {
-        await users_model.findOneAndUpdate({ // 数据库更新avatar
+    let { avatar } = req.body
+    new Promise((resolve) => {
+        users_model.findOneAndUpdate({ // 数据库更新avatar
             username
         },{
-            avatar: imgsrc
+            avatar
+        },{returnDocument: 'after'},(err, doc) => {
+            if(err) throw new Error(err)
+            resolve(doc)
         })
-        res.send({code:200, imgsrc})
+    }).then((doc) => {
+        res.send({code:200, message:'修改头像成功', data:doc})
     })
 })
 
