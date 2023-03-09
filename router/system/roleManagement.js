@@ -2,28 +2,51 @@ const express = require('express')
 const router = express.Router()
 
 const menuCatalog_model = require('../../model/menu_catalog')
+const menuItem_model = require('../../model/menu_item')
 const roles_model = require('../../model/roles')
 let { myfilters } = require('../../utils/common')
 
 // 获取角色菜单权限
-router.get('/roles_authority',(req,res) => {
-    menuCatalog_model.aggregate([
-    { $addFields: { "menuCatalog_id": { $toString: "$_id" }}}, // 新增字段，将ObjectId类型转换成Stirng类型后添加字段为 menuCatalog_id
-    {
-        $lookup: {
-            from: 'menu_item',
-            localField: 'menuCatalog_id',
-            foreignField: 'pid',
-            as: 'children'
-        }
-    }]).then(docs => {
-        docs.forEach(val => { // 如果目录标识为false，则该目录下的children为 []
-            if(!(val.alwaysShow)) {
-                val.children = []
+router.get('/roles_authority',async(req,res) => {
+    let Menu_item = await menuItem_model.find({})
+    menuCatalog_model.find({}).then(docs => {
+        function getMenusChildren(menus, items) {
+            let amenus = []
+            let children = []
+            for (let i = 0; i < menus.length; i++) {
+                if (menus[i].component !== 'Layout' && !menus[i].alwaysShow) {
+                    continue
+                };
+                amenus[i] = menus[i]
+                for (let j = 0; j < items.length; j++) {
+                    if (menus[i]._id == items[j].pid) {
+                        children.push(items[j])
+                    }
+                }
+                if (children.length != 0) {
+                    amenus[i].children = children // 将菜单栏进行合并
+                    children = getMenusChildren(children, items) // 递归多层级，将子菜单栏进行递归操作判断是否还有下一层
+                }
             }
-        })
-        res.send({code:200,data:docs})
+            if(children.length == 0 && amenus.length != menus.length) return children
+            return amenus
+        }
+        let Menus = getMenusChildren(JSON.parse(JSON.stringify(docs)),JSON.parse(JSON.stringify(Menu_item)))
+        res.send({code:200,data:Menus})
     })
+    
+    // menuCatalog_model.aggregate([
+    // { $addFields: { "menuCatalog_id": { $toString: "$_id" }}}, // 新增字段，将ObjectId类型转换成Stirng类型后添加字段为 menuCatalog_id
+    // {
+    //     $lookup: {
+    //         from: 'menu_item',
+    //         localField: 'menuCatalog_id',
+    //         foreignField: 'pid',
+    //         as: 'children'
+    //     }
+    // }]).then(docs => {
+    //     res.send({code:200,data:docs})
+    // })
 })
 
 // 获取角色列表

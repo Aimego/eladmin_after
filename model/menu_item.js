@@ -1,13 +1,23 @@
 const mongoose = require('../mongoose')
 
 const menuItem_Schema = mongoose.Schema({
-    cache: {
+    path: String,
+    pid: String,
+    name: String,
+    hidden: {
         type: Boolean,
         default: false
     },
-    path: String,
-    label: String,
-    pid: String
+    component: String,
+    meta: {
+        type: Object,
+        default: {
+            title: 'undefined',
+            icon: '',
+            sort: 999
+        }
+    },
+    alwaysShow: Boolean
 })
 
 module.exports = mongoose.model("Menu_Item",menuItem_Schema,"menu_item")

@@ -15,6 +15,7 @@ const experiment_router = require('./router/experiment')
 const systemTools_router = require('./router/systemTools')
 const roleManagement_router = require('./router/system/roleManagement')
 const userManagement_router = require('./router/system/userManagement')
+const menuManagement_router = require('./router/system/menuManagement')
 
 const jwtSecret = 'liuhao' // jwt签名
 let codeText = '' // 服务器生成的验证码
@@ -38,7 +39,7 @@ server.use(expressjwt({
         return null
     }
 }).unless({ // 排除的接口地址
-    path:['/captcha','/login','/user/setMenu']
+    path:['/captcha','/login','/user/setMenu','/menuManagement']
 }))
 
 server.use((err,req,res,next) => {
@@ -51,20 +52,20 @@ server.use((err,req,res,next) => {
     next()
 })
 
-server.all("*",(req,res,next) => { // 给所有请求添加上响应请求头(解决跨域)
+server.all("*",(req,res,next) => { // 给所有请求添加上响应请求头(解决跨域) CORS
     res.setHeader('Access-Control-Allow-Origin','*');
 	res.setHeader('Access-Control-Allow-Headers',"*");
-    // res.setHeader('Access-Control-Allow-Methods',"*")
     next()
 })
 
-// 路由模块(dashboard接口)
+// 路由模块
 server.use("/dashboard", dashboard_router)
 server.use("/user", user_router)
 server.use("/experiment", experiment_router)
 server.use('/systemTools', systemTools_router)
-server.use('/roleManagement',roleManagement_router)
-server.use('/userManagement',userManagement_router)
+server.use('/roleManagement', roleManagement_router)
+server.use('/userManagement', userManagement_router)
+server.use('/menuManagement', menuManagement_router)
 
 // 获取验证码
 server.get('/captcha',(req,res) => {

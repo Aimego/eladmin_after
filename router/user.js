@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const users_model = require('../model/users')
-const menu_model = require('../model/menu')
 const roles_model = require('../model/roles')
 const menuCatalog_model = require('../model/menu_catalog')
-const upload = require('../utils/upload') // 封装multer上传函数
+const menuItem_model = require('../model/menu_item')
+let { myfilters } = require('../utils/common')
 // 获取用户信息
 router.get('/',(req,res) => {
     let {username} = req.auth // req.auth 是通过 express-jwt中间件解析而来的
@@ -18,50 +18,18 @@ router.get('/',(req,res) => {
     })
 })
 
-// 获取菜单栏
-router.get('/menu',(req,res) => {
-    menu_model.find({}).then(docs => {
-        res.send({code:200, data:docs})
-    })
-})
-
-// 更新菜单栏
-router.get('/setMenu',(req,res) => {
-    menu_model.findOneAndUpdate({
-        _id: '63e7502655de704454f68bc1'
-    },{
-        children: [{"path": "/system/userManagement",
-                "name": "userManagement",
-                "component": "/system/userManagement",
-                "meta": {
-                  "title": "用户管理",
-                  "icon": "el-icon-s-custom"
-                }
-            },{
-                "path": "/system/roleManagement",
-                "name": "roleManagement",
-                "component": "/system/roleManagement",
-                "meta": {
-                  "title": "角色管理",
-                  "icon": "el-icon-s-check"
-                }
-            }]
-    }).then(() => {
-        res.send({code:200})
-    })
-})
-
 // 菜单权限
-router.get('/menu_authority',async(req,res,next) => {
+router.post('/menu_authority',async(req,res,next) => {
     let { username } = req.auth
-    let { roleId } = await new Promise((resolve) => {
+    let { page, size, filters } = req.body
+    let roleId = await new Promise((resolve) => {
         users_model.findOne({username},(err,doc) => {
-            if(!doc) { 
+            if(!doc.roleId) { 
                 let error = new Error('该用户未分配角色，请联系管理员')
                 error.code = 401
                 return next(error)
              }
-            resolve(doc)
+            resolve(doc.roleId)
         })
     })
     let { authority } = await new Promise((resolve) => {
@@ -74,44 +42,37 @@ router.get('/menu_authority',async(req,res,next) => {
             resolve(doc)
         })
     })
-    menuCatalog_model.aggregate([
-    { $addFields: { "menuCatalog_id": { $toString: "$_id" }}}, // 新增字段，将ObjectId类型转换成Stirng类型后添加字段为 menuCatalog_id
-    {
-        $lookup: {
-            from: 'menu_item',
-            localField: 'menuCatalog_id',
-            foreignField: 'pid',
-            as: 'children'
-        }
-    },
-    ]).then(docs => {
-        let newMenus = []
-        function authorityMenu(menu) { // 根据 authority 权限数组来判断是否有该路由
-            let childrenArr = []
-            for(let i = 0; i < menu.length; i++) {
-                // 如果路由被authority所包含，并且alwaysShow为false那么则直接获取该路由和该路由的children
-                if((authority.includes(`${menu[i]._id}`)) && !(menu[i].alwaysShow == undefined ? true : menu[i].alwaysShow)) {
-                    newMenus.push(menu[i])
+    let Menu_item = await menuItem_model.find({_id:{ $in: authority }})
+    menuCatalog_model.find({_id:{ $in: authority },...myfilters(filters)}).skip((page - 1) * size).limit(size).then(docs => {
+        function getMenusChildren(menus, items) { 
+            let amenus = []
+            let children = []
+            for (let i = 0; i < menus.length; i++) {
+                if (menus[i].component !== 'Layout' && !menus[i].alwaysShow) {
                     continue
-                }
-                // 如果路由不被authority所包含，但是always为true那么则将该路由下的children进行一个递归处理
-                else if((authority.includes(`${menu[i]._id}`)) || menu[i].alwaysShow) {
-                    if(menu[i].children) {
-                        menu[i].children = authorityMenu(menu[i].children)
-                        if(menu[i].children.length != 0) newMenus.push(menu[i])
-                    } else {
-                        childrenArr.push(menu[i])
+                };
+                amenus[i] = menus[i]
+                for (let j = 0; j < items.length; j++) {
+                    if (menus[i]._id == items[j].pid) {
+                        children.push(items[j])
                     }
                 }
+                if (children.length != 0) {
+                    amenus[i].children = children // 将菜单栏进行合并
+                    children = getMenusChildren(children, items) // 递归多层级，将子菜单栏进行递归操作判断是否还有下一层
+                }
             }
-            return childrenArr
+            if(children.length == 0 && amenus.length != menus.length) return children
+            return amenus
         }
-        authorityMenu(JSON.parse(JSON.stringify(docs)))
-        res.send({code:200,data:newMenus})
+        let authorityMenus = getMenusChildren(JSON.parse(JSON.stringify(docs)),JSON.parse(JSON.stringify(Menu_item)))
+        // docs是引用类型
+        res.send({code:200,data:authorityMenus})
     })
+    return false
 })
 
-// 上传用户图片
+// 上传用户头像
 router.post('/uploadAvatar',(req,res) => {
     let { username } = req.auth
     let { avatar } = req.body
@@ -120,7 +81,7 @@ router.post('/uploadAvatar',(req,res) => {
             username
         },{
             avatar
-        },{returnDocument: 'after'},(err, doc) => {
+        },{returnDocument: 'after'},(err, doc) => { // returnDocument: after 返回更新之后的文档
             if(err) throw new Error(err)
             resolve(doc)
         })
