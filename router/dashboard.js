@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const evaluate = require('../model/dashboard_evaluation')
-const { experimentalPeriod, Professtional } = require('../jsonDb/dashboard.json')
+const { experimentalPeriod } = require('../jsonDb/dashboard.json')
 
 // 实验周期统计
 router.get('/experimentalPeriod',(req,res) => {
@@ -13,11 +13,6 @@ router.get('/experimentalPeriod',(req,res) => {
     }
     res.send({code:200,data})
 })
-
-// // 实验专业统计
-// router.get('/professtional',(req,res) => {
-//     res.send({code:200,data:Professtional})
-// })
 
 // 实验评价
 router.post('/experimentalEvaluation',async (req,res) => {

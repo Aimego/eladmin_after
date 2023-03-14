@@ -1,8 +1,8 @@
 // 引入multerConfig配置文件
 const multerConfig = require('./multerConfig')
-
+const { BASE_URL } = require('../setting')
 const fileName = 'file' // 上传的 filename 名称
-const uploadBaseUrl = 'http://localhost:8001' // 上传服务器地址
+const uploadBaseUrl = BASE_URL // 上传服务器地址
 const imgPath = "/statics/images/"
 
 function upload(req, res) {

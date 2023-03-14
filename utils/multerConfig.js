@@ -15,7 +15,6 @@ const storage = multer.diskStorage({
     },
     // 存储名称
     filename: (req, file, cb) => {
-        // console.log(file)
         let fileFormat = (file.originalname).split(".");
         cb(null, +new Date() + fileFormat[0] + "." + fileFormat[fileFormat.length - 1])
     }

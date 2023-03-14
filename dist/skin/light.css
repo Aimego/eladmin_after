@@ -1,0 +1,12 @@
+:root {
+    --bgColor: #fff;
+    --appMainbgColor:#f6f7fb;
+    --fontColor: rgba(0,0,0,.85);
+    --table_bgColor: rgba(247, 255, 253, 1);
+    --table_fontColor: rgba(153, 153, 153, 1);
+    --table_HoverbgColor: #F5F7FA;
+    /* 菜单悬浮背景颜色 */
+    --menuHoverbgColor : #fff5f5;
+    /* loading背景颜色 */
+    --loadingbgColor: #fff;
+}

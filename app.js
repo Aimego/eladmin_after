@@ -4,7 +4,7 @@ const server = express() // 创建服务器对象
 const svgCaptcha = require('svg-captcha') // 加载验证码模块
 const jwt = require('jsonwebtoken') // jwtToken获取
 const { expressjwt } = require('express-jwt') // express针对的jwtToken验证
-const md5 = require('js-md5')
+const RataLimiter = require('./rateLimit')  // 限制请求速率(解决Doos恶意攻击)
 const upload = require('./utils/upload')
 const path = require('path')
 require('./utils/getNowDate') // 添加Date内置getNowDate方法
@@ -52,11 +52,13 @@ server.use((err,req,res,next) => {
     next()
 })
 
-server.all("*",(req,res,next) => { // 给所有请求添加上响应请求头(解决跨域) CORS
-    res.setHeader('Access-Control-Allow-Origin','*');
-	res.setHeader('Access-Control-Allow-Headers',"*");
-    next()
-})
+// server.all("*",(req,res,next) => { // 给所有请求添加上响应请求头(解决跨域) CORS
+//     res.setHeader('Access-Control-Allow-Origin','*');
+// 	res.setHeader('Access-Control-Allow-Headers',"*");
+//     next()
+// })
+
+server.use(RataLimiter)
 
 // 路由模块
 server.use("/dashboard", dashboard_router)
@@ -78,7 +80,7 @@ server.get('/captcha',(req,res) => {
 })
 
 // 用户登录login
-server.post('/login',(req,res,next) => {
+server.post('/login',async(req,res,next) => {
     let reg = new RegExp(`^${codeText}$`,'i')
     let { username, password, code } = req.body
     if(!reg.test(code)) {
@@ -101,7 +103,7 @@ server.post('/login',(req,res,next) => {
                     return next(error)
                 }
                 const token = jwt.sign({username,password}, jwtSecret, { expiresIn: '24h' }); // 默认加密算法是 hs256
-                resolve({token, user:doc})
+                resolve({code:200, token, user:doc})
             }else {
                 let error = new Error('用户名或密码错误')
                 error.code = 401

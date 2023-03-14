@@ -21,7 +21,6 @@ const users_Schema = mongoose.Schema({
     },
     avatar: {
         type: String,
-        default: 'http://localhost:8001/statics/images/16756960392063.jpg'
     },
     phone: String,
     email: {

@@ -3,12 +3,23 @@ const router = express.Router()
 
 const menuCatalog_model = require('../../model/menu_catalog')
 const menuItem_model = require('../../model/menu_item')
+const permission_btns = require('../../model/permission_btns')
 const roles_model = require('../../model/roles')
 let { myfilters } = require('../../utils/common')
 
 // 获取角色菜单权限
 router.get('/roles_authority',async(req,res) => {
-    let Menu_item = await menuItem_model.find({})
+    let Menu_item = await menuItem_model.aggregate([
+        { $addFields: { "menuItem_id": { $toString: "$_id" }}},
+        {
+            $lookup: {
+                from: 'permission_btns',
+                localField: 'menuItem_id',
+                foreignField: 'pid',
+                as: 'children'
+            }
+        }
+    ])
     menuCatalog_model.find({}).then(docs => {
         function getMenusChildren(menus, items) {
             let amenus = []
@@ -28,25 +39,12 @@ router.get('/roles_authority',async(req,res) => {
                     children = getMenusChildren(children, items) // 递归多层级，将子菜单栏进行递归操作判断是否还有下一层
                 }
             }
-            if(children.length == 0 && amenus.length != menus.length) return children
+            if(children.length == 0 && amenus.length != docs.length) return children
             return amenus
         }
         let Menus = getMenusChildren(JSON.parse(JSON.stringify(docs)),JSON.parse(JSON.stringify(Menu_item)))
         res.send({code:200,data:Menus})
     })
-    
-    // menuCatalog_model.aggregate([
-    // { $addFields: { "menuCatalog_id": { $toString: "$_id" }}}, // 新增字段，将ObjectId类型转换成Stirng类型后添加字段为 menuCatalog_id
-    // {
-    //     $lookup: {
-    //         from: 'menu_item',
-    //         localField: 'menuCatalog_id',
-    //         foreignField: 'pid',
-    //         as: 'children'
-    //     }
-    // }]).then(docs => {
-    //     res.send({code:200,data:docs})
-    // })
 })
 
 // 获取角色列表
